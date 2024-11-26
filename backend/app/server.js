@@ -41,6 +41,19 @@ pool.getConnection((err, connection) => {
 // 기본 경로 설정
 const BASE_PATH = path.join(__dirname, '..', 'tmp');
 
+// MySQL 데이터베이스 덤프 로직
+// ./data/db.sql 파일로 데이터베이스 덤프
+const dumpDatabase = () => {
+    const dumpFilePath = path.join(__dirname, '..', 'libc-data', 'db.sql');
+    const dumpCommand = `mysqldump -u myuser -pmyuser docker_db > ${dumpFilePath}`;
+    exec(dumpCommand, (error, stdout, stderr) => {
+        if (error) {
+            console.error('Error during database dump:', stderr);
+        }
+        console.log('Database dump successful:', stdout.trim());
+    });
+}
+
 // Docker image build API
 app.post('/build-docker', (req, res) => {
     const { ubuntuVersion, digest } = req.body;
@@ -130,6 +143,7 @@ app.post('/build-docker', (req, res) => {
                     message: 'Docker image created and data inserted into database successfully.',
                     imageTag
                 });
+                dumpDatabase();
             });
         });
     });
@@ -147,6 +161,7 @@ app.get('/docker-files', (req, res) => {
         }
         return res.status(200).json(results);
     });
+    dumpDatabase();
 });
 
 // 파일 다운로드
@@ -207,6 +222,7 @@ app.delete('/docker-files/:id', (req, res) => {
                 }
                 return res.status(200).json({ message: 'Record and files deleted successfully.' });
             });
+            dumpDatabase();
         });
     });
 });
@@ -247,6 +263,7 @@ app.post('/docker-files/upload', upload.fields([{ name: 'libc' }, { name: 'ld' }
             }
 
             console.log('Data inserted into database:', results);
+            dumpDatabase();
             return res.status(200).json({ message: 'Files uploaded and data inserted successfully.' });
         });
     } catch (error) {
@@ -284,6 +301,7 @@ app.put('/docker-files/:id', (req, res) => {
             }
 
             console.log('Record updated successfully.');
+            dumpDatabase();
             return res.status(200).json({ message: 'Record updated successfully.' });
         });
     });
