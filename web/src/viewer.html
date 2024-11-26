@@ -1,0 +1,61 @@
+<!-- viewer.html -->
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libc DataBase Viewer</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Libc DataBase Viewer</h1>
+            <nav>
+                <button class="nav-button" onclick="location.href='index.html'">Builder</button>
+            </nav>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle">
+            <span class="slider"></span>
+        </label>
+    </header>
+    <div class="container">
+        <h2>Docker Files</h2>
+        <div id="error-message" class="error-message"></div>
+        <table id="docker-files-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Docker Tag</th>
+                    <th>Created At</th>
+                    <th>Libc Download</th>
+                    <th>LD Download</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="uploadBtn" class="action-button">Upload New Files</button>
+    </div>
+
+    <!-- 업로드 및 수정 팝업 -->
+    <div id="popup" class="popup hidden">
+        <div class="popup-content">
+            <span class="popup-close">&times;</span>
+            <h2 id="popupTitle">Upload Files</h2>
+            <label for="dockerTag">Docker Tag:</label>
+            <input type="text" id="dockerTag" placeholder="Docker Tag 입력">
+            <label for="libcFile">libc.so 파일:</label>
+            <input type="file" id="libcFile" accept=".so,.6">
+            <br>
+            <label for="ldFile">ld-linux-[Arch].so.2 파일:</label>
+            <input type="file" id="ldFile" accept=".so,.2">
+            <button id="submitBtn" class="action-button">Submit</button>
+        </div>
+    </div>
+
+    <script src="js/viewer.js"></script>
+</body>
+</html>

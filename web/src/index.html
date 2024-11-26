@@ -1,0 +1,32 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libc DataBase Grabber</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Libc DataBase Grabber</h1>
+            <nav>
+                <button class="nav-button" onclick="location.href='viewer.html'">Viewer</button>
+            </nav>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="themeToggle">
+            <span class="slider"></span>
+        </label>
+    </header>
+    <div class="container">
+        <label for="ubuntuVersion">Ubuntu Version:</label>
+        <input type="text" id="ubuntuVersion" placeholder="예: 22.04">
+        <label for="digestValue">Digest:</label>
+        <input type="text" id="digestValue" placeholder="Digest 값 입력 (선택 사항)">
+        <button id="buildButton" class="action-button">Build</button>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

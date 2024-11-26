@@ -1,0 +1,489 @@
+/* styles.css */
+
+/* 공통 테마 변수 */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --header-bg: linear-gradient(135deg, #ffde59, #fc6471);
+    --primary-color: #ffde59;
+    --secondary-color: #fc6471;
+    --link-hover-color: #e63950;
+    --table-row-hover: #f4f9ff;
+    --button-hover-bg: linear-gradient(135deg, #fc6471, #e63950);
+    --popup-bg: rgba(0, 0, 0, 0.6);
+    --popup-content-bg: #ffffff;
+    --switch-bg: #ccc;
+    --switch-hover-bg: #b3b3b3;
+    --switch-knob: #ffffff;
+    --container-bg: #ffffff;
+    --input-bg: #ffffff;
+    --input-border: #ccc;
+}
+
+[data-theme="dark"] {
+    --bg-color: #1e1e2f;
+    --text-color: #f4f4f4;
+    --header-bg: linear-gradient(135deg, #e63950, #fc6471);
+    --primary-color: #fc6471;
+    --secondary-color: #ffde59;
+    --link-hover-color: #ffde59;
+    --table-row-hover: #2d2d3e;
+    --button-hover-bg: linear-gradient(135deg, #e63950, #c71d36);
+    --popup-bg: rgba(255, 255, 255, 0.1);
+    --popup-content-bg: #2d2d3e;
+    --switch-bg: #555;
+    --switch-hover-bg: #666;
+    --switch-knob: #e63950;
+    --container-bg: #2d2d3e;
+    --input-bg: #ffffff; /* 흰색 배경으로 설정 */
+    --input-border: #555;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+/* 페이지 전체 페이드 인 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* 헤더 */
+header {
+    background: var(--header-bg);
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideDown 1s ease-out;
+    flex-wrap: wrap; /* 모바일에서 요소가 감싸도록 설정 */
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+header nav a {
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+header nav a:hover {
+    background: var(--link-hover-color);
+    color: #333;
+    transform: scale(1.05);
+}
+
+/* iPhone 스타일 토글 스위치 */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--switch-bg);
+    transition: background-color 0.4s;
+    border-radius: 34px;
+}
+
+.slider::before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--switch-knob);
+    transition: transform 0.4s, background-color 0.4s;
+    border-radius: 50%;
+}
+
+.switch .slider .icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--text-color);
+    pointer-events: none;
+    transition: opacity 0.4s;
+}
+
+.switch .slider .sun {
+    left: 10px;
+    opacity: 1;
+}
+
+.switch .slider .moon {
+    right: 10px;
+    opacity: 0;
+}
+
+.switch input:checked + .slider {
+    background-color: var(--switch-hover-bg);
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(26px);
+}
+
+.switch input:checked + .slider .sun {
+    opacity: 0;
+}
+
+.switch input:checked + .slider .moon {
+    opacity: 1;
+}
+
+/* 컨테이너 */
+.container {
+    max-width: 1000px;
+    margin: 3rem auto;
+    padding: 2rem;
+    background: var(--container-bg);
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    animation: zoomIn 0.8s ease-out;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 제목 */
+h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-left: 4px solid var(--primary-color);
+    padding-left: 10px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* 테이블 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    text-align: left;
+    font-size: 1rem;
+}
+
+table th {
+    background: var(--header-bg);
+    color: white;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+}
+
+table tr:nth-child(even) {
+    background: var(--table-row-hover);
+}
+
+table tr:hover {
+    background: var(--link-hover-color);
+    color: var(--bg-color);
+    transition: all 0.2s ease-in-out;
+}
+
+/* 입력 필드 */
+input[type="text"], input[type="password"], textarea, select {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 2px solid var(--input-border);
+    border-radius: 8px;
+    margin-top: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="password"],
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    border-color: #555;
+    background-color: #ffffff; /* 흰색 배경으로 설정 */
+    color: #333; /* 어두운 텍스트 색상 */
+}
+
+input[type="text"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(252, 100, 113, 0.5);
+}
+
+/* 버튼 */
+.buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.buttons button, .files-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.buttons button:hover, .files-btn:hover {
+    background: var(--button-hover-bg);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.buttons .remove {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.buttons .remove:hover {
+    background: var(--button-hover-bg);
+}
+
+/* 푸터 */
+footer.powered-by {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+footer.powered-by a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer.powered-by a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+/* 팝업창 숨김 상태 */
+.popup.hidden {
+    display: none;
+}
+
+/* 팝업창 배경 */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--popup-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 팝업창 내용 */
+.popup-content {
+    background: var(--popup-content-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    animation: popupFadeIn 0.3s ease-in-out;
+    position: relative;
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 팝업 닫기 버튼 */
+.popup-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.popup-close:hover {
+    color: var(--link-hover-color);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    header nav {
+        margin-top: 0.5rem;
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .switch {
+        margin-top: 1rem;
+    }
+
+    .container {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
+    }
+
+    table th, table td {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+
+    .buttons button, .files-btn {
+        width: 100%;
+    }
+}
+
+.nav-button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+    background: var(--button-hover-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.action-button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 0.8rem 1.5rem;
+    margin-top: 1rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.action-button:hover {
+    background: var(--button-hover-bg);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+    margin-left: 2rem;
+    gap: 1rem;
+}

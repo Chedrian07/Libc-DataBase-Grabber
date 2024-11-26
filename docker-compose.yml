@@ -1,0 +1,53 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  web:
+    build: ./web
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    expose:
+      - "3000"
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Docker 소켓 공유
+      - ./backend/app/libc-data:/usr/src/app/libc-data # libc-data 디렉토리 공유
+      - ./backend/uploads:/usr/src/app/uploads # 업로드된 파일 공유
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock # Docker 엔진 소켓 설정
+
+  db:
+    build: ./db
+    environment:
+      MYSQL_ROOT_PASSWORD: myroot
+      MYSQL_DATABASE: docker_db
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: myuser
+    volumes:
+      - ./DB_Extract:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pmyroot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
