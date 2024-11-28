@@ -1,4 +1,3 @@
-# docker-compose.yml
 version: '3.8'
 
 services:
@@ -26,6 +25,7 @@ services:
       - ./backend/uploads:/usr/src/app/uploads # 업로드된 파일 공유
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock # Docker 엔진 소켓 설정
+    restart: always # backend가 종료되면 자동 재시작
 
   db:
     build: ./db
@@ -44,6 +44,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: always # db가 종료되면 자동 재시작
 
 networks:
   app-network:
