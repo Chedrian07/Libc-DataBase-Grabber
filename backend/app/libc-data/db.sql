@@ -1,8 +1,9 @@
--- MariaDB dump 10.19  Distrib 10.11.6-MariaDB, for debian-linux-gnu (aarch64)
+/*M!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19  Distrib 10.11.11-MariaDB, for debian-linux-gnu (aarch64)
 --
 -- Host: db    Database: docker_db
 -- ------------------------------------------------------
--- Server version	8.0.40
+-- Server version	8.0.42
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -21,7 +22,7 @@
 
 DROP TABLE IF EXISTS `docker_files`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `docker_files` (
   `id` int NOT NULL AUTO_INCREMENT,
   `docker_tag` varchar(255) NOT NULL,
@@ -29,7 +30,7 @@ CREATE TABLE `docker_files` (
   `ld` varchar(512) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,6 +39,9 @@ CREATE TABLE `docker_files` (
 
 LOCK TABLES `docker_files` WRITE;
 /*!40000 ALTER TABLE `docker_files` DISABLE KEYS */;
+INSERT INTO `docker_files` VALUES
+(1,'pop_rdi','/usr/src/libc-data/data/22.04-b6b83d3c3317/libc.so.6','/usr/src/libc-data/data/22.04-b6b83d3c3317/ld-linux-x86-64.so.2','2025-04-19 08:49:15'),
+(2,'test','/usr/src/libc-data/data/22.04-b6b83d3c3317/libc.so.6','/usr/src/libc-data/data/22.04-b6b83d3c3317/ld-linux-x86-64.so.2','2025-04-19 08:57:12');
 /*!40000 ALTER TABLE `docker_files` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-28  0:23:26
+-- Dump completed on 2025-04-19  8:59:06

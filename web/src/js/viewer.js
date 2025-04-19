@@ -33,8 +33,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const libcFileInput = document.getElementById('libcFile');
     const ldFileInput = document.getElementById('ldFile');
 
+    // CSRF 토큰 관리
+    let csrfToken = '';
+    
+    // 랜덤 CSRF 토큰 생성 함수
+    function generateCSRFToken() {
+        const array = new Uint8Array(16);
+        window.crypto.getRandomValues(array);
+        csrfToken = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+        localStorage.setItem('csrfToken', csrfToken);
+        return csrfToken;
+    }
+    
+    // 저장된 토큰 가져오기 또는 새로 생성
+    csrfToken = localStorage.getItem('csrfToken') || generateCSRFToken();
+
     let isEditMode = false;
     let editId = null;
+    let oldDockerTag = '';
 
     uploadBtn.addEventListener('click', () => {
         isEditMode = false;
@@ -53,8 +69,15 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.addEventListener('click', async () => {
         const dockerTag = dockerTagInput.value.trim();
 
+        // 입력 유효성 검사 강화
         if (!dockerTag) {
             alert('Docker Tag를 입력해주세요.');
+            return;
+        }
+        
+        // 특수문자 검증
+        if (!/^[a-zA-Z0-9._-]+$/.test(dockerTag)) {
+            alert('Docker Tag에 허용되지 않는 특수문자가 포함되어 있습니다.');
             return;
         }
 
@@ -70,6 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('libc와 ld 파일을 모두 선택해주세요.');
                 return;
             }
+            
+            // 파일 크기 및 형식 검증
+            if (libcFile.size > 100 * 1024 * 1024 || ldFile.size > 100 * 1024 * 1024) {
+                alert('파일 크기가 너무 큽니다. 100MB 이하의 파일만 업로드 가능합니다.');
+                return;
+            }
 
             await uploadDockerFiles(dockerTag, libcFile, ldFile);
         }
@@ -82,10 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('dockerTag', dockerTag);
         formData.append('libc', libcFile);
         formData.append('ld', ldFile);
-
+        
         try {
             const response = await fetch(`${apiBase}/upload`, {
                 method: 'POST',
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                },
                 body: formData
             });
 
@@ -103,10 +135,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function updateDockerFile(id, dockerTag) {
         try {
+            // OWASP 권장: 유효하지 않은 ID 거부
+            if (!/^\d+$/.test(id)) {
+                throw new Error('유효하지 않은 ID 형식입니다.');
+            }
+            
             const response = await fetch(`${apiBase}/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ docker_tag: dockerTag })
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken 
+                },
+                body: JSON.stringify({ 
+                    docker_tag: dockerTag,
+                    old_docker_tag: oldDockerTag
+                })
             });
 
             if (!response.ok) {
@@ -130,27 +173,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.length === 0) {
                 errorMessageDiv.textContent = 'No records found.';
+                tableBody.innerHTML = '';
                 return;
             }
 
+            errorMessageDiv.textContent = '';
             tableBody.innerHTML = '';
+            
             data.forEach(item => {
+                // XSS 방지를 위한 이스케이핑
+                const escapeHtml = (unsafe) => {
+                    return unsafe
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#039;");
+                };
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${item.id}</td>
-                    <td>${item.docker_tag}</td>
-                    <td>${new Date(item.created_at).toLocaleString()}</td>
-                    <td><a href="${apiBase}/${item.id}/download/libc">Download Libc</a></td>
-                    <td><a href="${apiBase}/${item.id}/download/ld">Download LD</a></td>
-                    <td><button class="editBtn" data-id="${item.id}" data-docker-tag="${item.docker_tag}">Edit</button></td>
-                    <td><button class="deleteBtn" data-id="${item.id}">Delete</button></td>
+                    <td>${escapeHtml(String(item.id))}</td>
+                    <td>${escapeHtml(item.docker_tag)}</td>
+                    <td>${escapeHtml(new Date(item.created_at).toLocaleString())}</td>
+                    <td><a href="${apiBase}/${encodeURIComponent(item.id)}/download/libc" class="download-link" data-id="${escapeHtml(String(item.id))}" data-type="libc">Download Libc</a></td>
+                    <td><a href="${apiBase}/${encodeURIComponent(item.id)}/download/ld" class="download-link" data-id="${escapeHtml(String(item.id))}" data-type="ld">Download LD</a></td>
+                    <td><button class="editBtn" data-id="${escapeHtml(String(item.id))}" data-docker-tag="${escapeHtml(item.docker_tag)}">Edit</button></td>
+                    <td><button class="deleteBtn" data-id="${escapeHtml(String(item.id))}">Delete</button></td>
                 `;
                 tableBody.appendChild(row);
+            });
+
+            // 다운로드 링크 클릭 이벤트 추가
+            document.querySelectorAll('.download-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = link.getAttribute('data-id');
+                    const fileType = link.getAttribute('data-type');
+                    
+                    // ID 검증
+                    if (!/^\d+$/.test(id)) {
+                        alert('유효하지 않은 ID 형식입니다.');
+                        return;
+                    }
+                    
+                    window.location.href = `${apiBase}/${id}/download/${fileType}`;
+                });
             });
 
             document.querySelectorAll('.deleteBtn').forEach(button => {
                 button.addEventListener('click', () => {
                     const id = button.getAttribute('data-id');
+                    
+                    // ID 검증
+                    if (!/^\d+$/.test(id)) {
+                        alert('유효하지 않은 ID 형식입니다.');
+                        return;
+                    }
+                    
                     deleteDockerFile(id);
                 });
             });
@@ -159,8 +239,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.addEventListener('click', () => {
                     const id = button.getAttribute('data-id');
                     const dockerTag = button.getAttribute('data-docker-tag');
+                    
+                    // ID 검증
+                    if (!/^\d+$/.test(id)) {
+                        alert('유효하지 않은 ID 형식입니다.');
+                        return;
+                    }
+                    
                     isEditMode = true;
                     editId = id;
+                    oldDockerTag = dockerTag; // 기존 태그 저장
                     dockerTagInput.value = dockerTag;
                     libcFileInput.value = '';
                     ldFileInput.value = '';
@@ -179,7 +267,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const response = await fetch(`${apiBase}/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-Token': csrfToken
+                }
             });
 
             if (!response.ok) {
@@ -195,5 +286,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // 초기화 시 데이터 로드
     loadDockerFiles();
 });

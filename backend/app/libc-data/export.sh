@@ -9,9 +9,28 @@ fi
 
 DOCKER_TAG=$1
 TMP_DIR=$(mktemp -d)
-EXTRACT_DIR="$(dirname "$(pwd)")/libc-data/data/$DOCKER_TAG"
+EXTRACT_DIR="/usr/src/libc-data/data/$DOCKER_TAG"
+
+# 디렉토리 생성 및 권한 확인
+if [ ! -d "/usr/src/libc-data" ]; then
+    mkdir -p "/usr/src/libc-data"
+    echo "Created base directory: /usr/src/libc-data"
+fi
+
+if [ ! -d "/usr/src/libc-data/data" ]; then
+    mkdir -p "/usr/src/libc-data/data"
+    echo "Created data directory: /usr/src/libc-data/data"
+fi
 
 mkdir -p "$EXTRACT_DIR"
+echo "Created extract directory: $EXTRACT_DIR"
+
+# 디렉토리 쓰기 권한 확인
+if [ ! -w "$EXTRACT_DIR" ]; then
+    echo "Error: No write permission for directory $EXTRACT_DIR"
+    chmod -R 755 "/usr/src/libc-data"
+    echo "Applied permissions to /usr/src/libc-data"
+fi
 
 DOCKER_IMAGE=$(docker images --format '{{.Repository}}:{{.Tag}}' | grep ":$DOCKER_TAG$")
 
@@ -48,6 +67,9 @@ if [ -n "$LD_LOADER_PATH" ]; then
 else
     echo "Error: ld loader not found in the image."
 fi
+
+# 파일 권한 설정
+chmod 644 "$EXTRACT_DIR/libc.so.6" "$EXTRACT_DIR/ld-linux-x86-64.so.2" 2>/dev/null
 
 rm -rf "$TMP_DIR"
 echo "Extraction complete. Files saved to $EXTRACT_DIR."

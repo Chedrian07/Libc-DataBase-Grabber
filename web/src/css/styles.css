@@ -18,6 +18,10 @@
     --container-bg: #ffffff;
     --input-bg: #ffffff;
     --input-border: #ccc;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
 }
 
 [data-theme="dark"] {
@@ -37,6 +41,10 @@
     --container-bg: #2d2d3e;
     --input-bg: #ffffff; /* 흰색 배경으로 설정 */
     --input-border: #555;
+    --success-color: #5cb85c;
+    --error-color: #d9534f;
+    --warning-color: #f0ad4e;
+    --info-color: #5bc0de;
 }
 
 body {
@@ -486,4 +494,97 @@ header nav {
     align-items: center;
     margin-left: 2rem;
     gap: 1rem;
+}
+
+/* 결과 메시지 스타일 */
+.result-message {
+    margin-top: 15px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    opacity: 1;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.result-message.success {
+    background-color: var(--success-color);
+    color: white;
+    border-left: 5px solid #218838;
+}
+
+.result-message.error {
+    background-color: var(--error-color);
+    color: white;
+    border-left: 5px solid #bd2130;
+}
+
+.result-message.warning {
+    background-color: var(--warning-color);
+    color: #333;
+    border-left: 5px solid #d39e00;
+}
+
+.result-message.info {
+    background-color: var(--info-color);
+    color: white;
+    border-left: 5px solid #138496;
+}
+
+.result-message.loading {
+    background-color: var(--info-color);
+    color: white;
+    border-left: 5px solid #138496;
+    display: flex;
+    align-items: center;
+}
+
+.result-message.loading::after {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 보안 에러 메시지 스타일 */
+.error-message {
+    color: var(--error-color);
+    margin: 10px 0;
+    padding: 10px;
+    background-color: rgba(220, 53, 69, 0.1);
+    border-radius: 5px;
+    border-left: 5px solid var(--error-color);
+    font-weight: bold;
+}
+
+/* 입력 필드 보안 스타일 강화 */
+input:invalid {
+    border-color: var(--error-color);
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+/* 터치 장치에 대한 접근성 개선 */
+@media (hover: none) {
+    .action-button, 
+    .nav-button, 
+    .buttons button, 
+    .popup-close {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    input, select, textarea {
+        min-height: 44px;
+        font-size: 16px; /* iOS에서 확대 방지 */
+    }
 }

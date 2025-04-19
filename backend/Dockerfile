@@ -8,8 +8,10 @@ RUN npm install
 
 COPY . .
 
-RUN chmod +x app/libc-data/export.sh
-
+# libc-data 디렉토리가 올바른 경로에 생성되도록 수정
+RUN mkdir -p /usr/src/libc-data/data
+RUN cp -r app/libc-data/* /usr/src/libc-data/
+RUN chmod +x /usr/src/libc-data/export.sh
 
 # .my.cnf 파일 복사 && 권한 설정
 COPY .my.cnf /root/.my.cnf

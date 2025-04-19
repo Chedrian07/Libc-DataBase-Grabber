@@ -21,8 +21,8 @@ services:
         condition: service_healthy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Docker 소켓 공유
-      - ./backend/app/libc-data:/usr/src/app/libc-data # libc-data 디렉토리 공유
-      - ./backend/uploads:/usr/src/app/uploads # 업로드된 파일 공유
+      - libc_data_volume:/usr/src/libc-data # libc-data 볼륨 공유 (변경됨)
+      - upload_volume:/usr/src/uploads # 업로드 볼륨 공유 (변경됨)
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock # Docker 엔진 소켓 설정
     restart: always # backend가 종료되면 자동 재시작
@@ -52,3 +52,5 @@ networks:
 
 volumes:
   db_data:
+  libc_data_volume: # 파일 지속을 위한 새로운 볼륨
+  upload_volume: # 업로드 파일 지속을 위한 새로운 볼륨
